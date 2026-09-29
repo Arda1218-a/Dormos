@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS Multi-User - Çok Kişilik Akıllı Oda İstasyonu</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MQTT WebSocket Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+
+  <div class="tablet-frame">
+    <div class="camera-dot"></div>
+
+    <div class="tablet-screen">
+      
+      <!-- ============================================================= -->
+      <!-- DURUM A: KİLİT / BEKLEME EKRANI (HERKESE AÇIK GÜVENLİK MODU)  -->
+      <!-- ============================================================= -->
+      <section id="screen-standby" class="screen-view active">
+        
+        <!-- Üst Bilgi Çubuğu -->
+        <header class="standby-header">
+          <div class="room-identity">
+            <span class="dorm-logo">🏢</span>
+            <div>
+              <h1 id="room-title">Oda 104</h1>
+              <p id="room-subtitle">5 Kişilik Standart KYK Odası • 1. Kat</p>
+            </div>
+          </div>
+
+          <!-- Oda Tipi Değiştirici (Test İçin 3 Kişilik / 5 Kişilik) -->
+          <div class="room-capacity-toggle">
+            <button class="btn-cap active" id="btn-cap-5" onclick="setRoomCapacity(5)">5 Kişilik Oda</button>
+            <button class="btn-cap" id="btn-cap-3" onclick="setRoomCapacity(3)">3 Kişilik Oda</button>
+          </div>
+
+          <div class="header-time-box">
+            <span id="standby-clock">14:30:00</span>
+            <small>7/24 Kesintisiz Güvenlik</small>
+          </div>
+        </header>
+
+        <!-- 7/24 Arka Plan Güvenlik & Bina Hizmetleri Barı (Oturum Açmadan Çalışır) -->
+        <div class="shared-services-strip">
+          <div class="service-pill green">
+            <span class="pulse-dot green"></span>
+            <span>mmWave Varlık: <strong>3 Kişi Odada</strong></span>
+          </div>
+          <div class="service-pill green">
+            <span class="pulse-dot green"></span>
+            <span>Yangın & Gaz: <strong>Güvenli</strong></span>
+          </div>
+          <div class="service-pill green">
+            <span class="pulse-dot green"></span>
+            <span>Su Sızıntı Hatları: <strong>Normal</strong></span>
+          </div>
+          <div class="service-pill blue">
+            <span>💧 Kat Arıtma Deposu: <strong>%86 (TDS 32 ppm)</strong></span>
+          </div>
+          <button class="btn-emergency-bypass" onclick="triggerEmergencyBypass()">
+            🚨 ACİL SOS (112 / Revir)
+          </button>
+        </div>
+
+        <!-- 🚌 YENİ: Ortak Kampüs Ring / Otobüs HUD & Kütüphane Canlı Bilgi Şeridi -->
+        <div class="campus-live-hud">
+          <div class="hud-item bus">
+            <span class="hud-icon">🚌</span>
+            <div class="hud-text">
+              <strong>Kampüs Ring: <span class="badge-time" id="ring-time">3 dk</span></strong>
+              <small>Merkez Metro Hattı</small>
+            </div>
+          </div>
+          <div class="hud-item bus">
+            <span class="hud-icon">🚍</span>
+            <div class="hud-text">
+              <strong>Hat 130A: <span class="badge-time" id="city-bus-time">11 dk</span></strong>
+              <small>Kadıköy / Şehir Merkezi</small>
+            </div>
+          </div>
+          <div class="hud-item library">
+            <span class="hud-icon">📚</span>
+            <div class="hud-text">
+              <strong>Merkez Kütüphane: <span class="text-green">%78 Dolu</span> (34 Boş)</strong>
+              <small>1.4 km • ~15 dk Yürüyüş</small>
+            </div>
+          </div>
+          <div class="hud-item laundry">
+            <span class="hud-icon">🧺</span>
+            <div class="hud-text">
+              <strong>Çamaşırhane: <span class="text-blue" id="laundry-summary">2 Boş Makine</span></strong>
+              <small>Bodrum Kat</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Öğrenci Profil Seçim Alanı -->
+        <main class="standby-body">
+          <h2>Kişisel Profilinize Giriş Yapın</h2>
+          <p class="select-hint">Kendi yatağınızı seçin. Bilgileriniz diğer oda arkadaşlarınızdan gizlenir.</p>
+
+          <div class="resident-cards-grid" id="residents-grid">
+            <!-- JS ile dinamik olarak 3 veya 5 yatak kartı basılacak -->
+          </div>
+        </main>
+
+        <!-- Alt Durum Barı -->
+        <footer class="standby-footer">
+          <div class="footer-note">
+            <span>📞 Dışarıdan veya İdareden gelen aramalar oturum açmadan yanıtlanabilir.</span>
+          </div>
+          <button class="btn-test-call" onclick="simulateIncomingCall('Yurt Müdürü (Danışma)')">
+            🔔 Gelen Aramayı Test Et
+          </button>
+        </footer>
+
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- DURUM B: KİŞİSEL PROFİL ALANI (GİRİŞ YAPILDIKTAN SONRA AÇILIR) -->
+      <!-- ============================================================= -->
+      <section id="screen-personal" class="screen-view">
+        
+        <header class="personal-header">
+          <div class="user-meta">
+            <div class="avatar-circle" id="user-avatar">MK</div>
+            <div>
+              <h2 id="active-user-name">Mehmet Kaya</h2>
+              <p id="active-user-bed">Yatak 2 • Kişisel Özel Oturum</p>
+            </div>
+          </div>
+
+          <div class="session-timer-box">
+            <span>Otomatik Kapanma: <strong id="session-countdown">60s</strong></span>
+            <button class="btn-logout" onclick="logoutSession()">🔒 Güvenli Çıkış</button>
+          </div>
+        </header>
+
+        <div class="personal-grid">
+          
+          <!-- 1. Bireysel Aydınlatma & Kütüphane Odak Modu -->
+          <div class="p-card light-zoning">
+            <div class="p-card-head">
+              <h3>💡 Bölgesel Işık & Odaklanma</h3>
+              <span class="badge green" id="focus-mode-badge">Normal Mod</span>
+            </div>
+            <div class="control-rows">
+              <div class="c-row">
+                <span>Yatak Okuma Lambası</span>
+                <label class="switch">
+                  <input type="checkbox" id="chk-bed-light" onchange="toggleBedLight(this.checked)">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="c-row">
+                <span>Masa Prizi & LED</span>
+                <label class="switch">
+                  <input type="checkbox" id="chk-desk-light" checked>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="c-row highlight-focus">
+                <span>📚 <strong>Kütüphane / Odak Modu</strong></span>
+                <label class="switch">
+                  <input type="checkbox" id="chk-focus-mode" onchange="toggleFocusMode(this.checked)">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <p class="zoning-note" id="focus-hint-text">🌱 Odak modu açıldığında bildirimler sessize alınır ve masa ışığı 4000K beyaz çalışma ışığına geçer.</p>
+          </div>
+
+          <!-- 2. Kişiye Özel Kargo & Akıllı Dolap -->
+          <div class="p-card locker-private">
+            <div class="p-card-head">
+              <h3>📦 Sana Özel Kargo Teslimatı</h3>
+              <span class="badge orange">Gizli PIN</span>
+            </div>
+            <div class="personal-kargo-content" id="personal-kargo-box">
+              <div class="kargo-icon-large">🎁</div>
+              <div>
+                <h4 id="user-kargo-status">1 Adet Bekleyen Paketiniz Var</h4>
+                <p>Lobi Kargo Dolabı: <strong id="user-kargo-slot">DOLAP #07</strong></p>
+                <p class="pin-display">Açma Şifreniz: <strong id="user-kargo-pin">3914</strong></p>
+                <small class="pin-warning">⚠️ Bu şifre sadece sizin telefonunuza ve profilinize gönderilmiştir.</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. 🧺 YENİ: Akıllı Çamaşırhane Takip & Rezervasyon -->
+          <div class="p-card laundry-card">
+            <div class="p-card-head">
+              <h3>🧺 Bodrum Çamaşırhane Takibi</h3>
+              <span class="badge blue">Canlı IoT</span>
+            </div>
+            <div class="laundry-machines-grid">
+              <div class="machine-box busy">
+                <span>Makine 1</span>
+                <strong>Dolu (14 dk)</strong>
+              </div>
+              <div class="machine-box busy">
+                <span>Makine 2</span>
+                <strong>Dolu (28 dk)</strong>
+              </div>
+              <div class="machine-box available" id="mach-3-box">
+                <span>Makine 3</span>
+                <strong id="mach-3-status">BOŞ</strong>
+                <button class="btn-reserve-mach" id="btn-reserve-3" onclick="reserveLaundryMachine(3)">45 dk Rezerve Et</button>
+              </div>
+              <div class="machine-box available" id="mach-4-box">
+                <span>Makine 4</span>
+                <strong id="mach-4-status">BOŞ</strong>
+                <button class="btn-reserve-mach" id="btn-reserve-4" onclick="reserveLaundryMachine(4)">45 dk Rezerve Et</button>
+              </div>
+            </div>
+            <small class="zoning-note">🌱 Çamaşırınız bitince telefonunuza anında bildirim gönderilir.</small>
+          </div>
+
+          <!-- 4. 🚖 YENİ: Akıllı Taksi Çağır & QR Biniş Eşleşmesi -->
+          <div class="p-card taxi-card">
+            <div class="p-card-head">
+              <h3>🚖 Kampüs Önüne Taksi Çağır</h3>
+              <span class="badge orange">QR Doğrulama</span>
+            </div>
+            <div class="taxi-call-box">
+              <p>Yurt kapısı nizamiyesine taksi veya araç çağırın. Karışıklığı önlemek için sürücüyle eşleşen QR kod üretilir.</p>
+              <div class="pickup-select-row">
+                <select id="pickup-location">
+                  <option value="Kampüs Ana Nizamiyesi">📍 Kampüs Ana Nizamiyesi</option>
+                  <option value="Yurtlar Otobüs Durağı Önü">📍 Yurtlar Otobüs Durağı Önü</option>
+                  <option value="Mühendislik Fakültesi Önü">📍 Mühendislik Fakültesi Önü</option>
+                </select>
+                <button class="btn-call-taxi" onclick="summonSmartTaxi()">Taksi Çağır</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Eczane & Revir İlaç Sorgulama Portalı -->
+          <div class="p-card pharmacy-query">
+            <div class="p-card-head">
+              <h3>💊 Eczane & İlaç Stok Sorgulama</h3>
+              <span class="badge blue">Canlı Revir</span>
+            </div>
+            <div class="pharmacy-box">
+              <div class="query-input-group">
+                <input type="text" id="input-med-query" placeholder="İlaç adı girin (Örn: Parol, Alerji, Çinko)...">
+                <button class="btn-ask-med" onclick="askPharmacyStock()">Eczaneye Sor</button>
+              </div>
+              <div class="query-response" id="pharmacy-response-box">
+                <p>Eczane stok durumu burada görünecektir.</p>
+              </div>
+              <div class="my-prescriptions">
+                <span>Kişisel Dozajınız: <strong>Augmentin 1000mg (21:00)</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Kantin & Bireysel Sipariş -->
+          <div class="p-card canteen-private">
+            <div class="p-card-head">
+              <h3>🍽️ Kantin Siparişi (Kendi Hesabınızdan)</h3>
+              <span class="badge green">Kendi Sepetiniz</span>
+            </div>
+            <div class="canteen-quick-buttons">
+              <button class="btn-quick-order" onclick="orderFoodForUser('Sıcak Mercimek Çorbası', 35.0)">
+                🍲 Mercimek Çorbası (35 TL)
+              </button>
+              <button class="btn-quick-order" onclick="orderFoodForUser('Kaşarlı Tost Menü', 45.0)">
+                🥪 Kaşarlı Tost (45 TL)
+              </button>
+              <button class="btn-quick-order sick" onclick="orderFoodForUser('🤒 Şifalı Hasta Çorbası', 0.0)">
+                🥣 Odaya Hasta Çorbası İste (Ücretsiz)
+              </button>
+            </div>
+            <div id="canteen-order-feedback" class="order-feedback"></div>
+          </div>
+
+          <!-- 5. Oda İçi Temizlik & Nöbet Çizelgesi -->
+          <div class="p-card chores-card">
+            <div class="p-card-head">
+              <h3>🧹 Oda Temizlik & Nöbet Çizelgesi</h3>
+              <span class="badge">Haftalık</span>
+            </div>
+            <div class="chore-status" id="chore-banner">
+              <span>Bu Haftaki Göreviniz: <strong class="text-orange" id="user-chore-text">Banyo & Lavabo Temizliği</strong></span>
+            </div>
+            <ul class="chore-list" id="chore-team-list">
+              <!-- Diğer oda arkadaşlarının nöbetleri -->
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+  </div>
+
+  <!-- OTP / PIN Giriş Modalı -->
+  <div id="otp-modal" class="modal-overlay">
+    <div class="otp-box">
+      <div class="otp-avatar" id="otp-avatar">👤</div>
+      <h3 id="otp-user-title">Mehmet Kaya Girişi</h3>
+      <p class="otp-hint">Telefonunuza SMS gönderildi. 4 haneli PIN veya SMS kodunu girin:</p>
+      
+      <div class="simulated-sms-badge" id="simulated-sms-badge">
+        📲 <em>Simüle Edilen Telefon SMS: Kodunuz <strong>4921</strong></em>
+      </div>
+
+      <div class="pin-dots-container">
+        <input type="password" id="pin-input" maxlength="4" placeholder="••••" readonly>
+      </div>
+
+      <div class="otp-keypad">
+        <button onclick="pressOtpDigit('1')">1</button>
+        <button onclick="pressOtpDigit('2')">2</button>
+        <button onclick="pressOtpDigit('3')">3</button>
+        <button onclick="pressOtpDigit('4')">4</button>
+        <button onclick="pressOtpDigit('5')">5</button>
+        <button onclick="pressOtpDigit('6')">6</button>
+        <button onclick="pressOtpDigit('7')">7</button>
+        <button onclick="pressOtpDigit('8')">8</button>
+        <button onclick="pressOtpDigit('9')">9</button>
+        <button class="btn-cancel-otp" onclick="closeOtpModal()">İptal</button>
+        <button onclick="pressOtpDigit('0')">0</button>
+        <button class="btn-clear-otp" onclick="clearOtp()">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Taksi QR Eşleşme Modalı -->
+  <div id="taxi-modal" class="modal-overlay">
+    <div class="taxi-match-box">
+      <div class="taxi-icon pulse-call">🚖</div>
+      <h3>Taksi Yola Çıktı! (Uber / Taksi Entegrasyonu)</h3>
+      <p id="taxi-pickup-info">Alış Noktası: Kampüs Ana Nizamiyesi</p>
+
+      <div class="taxi-qr-wrap">
+        <!-- Simüle Edilmiş SVG QR Kodu -->
+        <svg class="qr-svg" width="140" height="140" viewBox="0 0 100 100">
+          <rect width="100" height="100" fill="#ffffff" rx="10"/>
+          <!-- QR Desenleri -->
+          <rect x="10" y="10" width="25" height="25" fill="#000000"/>
+          <rect x="15" y="15" width="15" height="15" fill="#ffffff"/>
+          <rect x="18" y="18" width="9" height="9" fill="#000000"/>
+          
+          <rect x="65" y="10" width="25" height="25" fill="#000000"/>
+          <rect x="70" y="15" width="15" height="15" fill="#ffffff"/>
+          <rect x="73" y="18" width="9" height="9" fill="#000000"/>
+          
+          <rect x="10" y="65" width="25" height="25" fill="#000000"/>
+          <rect x="15" y="70" width="15" height="15" fill="#ffffff"/>
+          <rect x="18" y="73" width="9" height="9" fill="#000000"/>
+
+          <rect x="42" y="15" width="8" height="20" fill="#000000"/>
+          <rect x="42" y="45" width="16" height="16" fill="#000000"/>
+          <rect x="65" y="45" width="20" height="8" fill="#000000"/>
+          <rect x="75" y="65" width="15" height="20" fill="#000000"/>
+          <rect x="42" y="75" width="18" height="10" fill="#000000"/>
+        </svg>
+
+        <div class="taxi-pin-badge">
+          <span>Sürücü Doğrulama Kodu</span>
+          <strong id="taxi-match-pin">PIN: 8492</strong>
+        </div>
+      </div>
+
+      <div class="taxi-vehicle-details">
+        <p>Araç Plakası: <strong id="taxi-plate">34 TKS 88 (Sarı Ticari)</strong></p>
+        <p>Tahmini Varış: <strong>4 Dakika</strong></p>
+        <small class="text-orange">⚠️ Kalabalık nizamiyede yanlış araca binmemek için bu QR kodu sürücüye gösterin.</small>
+      </div>
+
+      <button class="btn-close-taxi" onclick="closeTaxiModal()">Tamam, Kapıya İniyorum</button>
+    </div>
+  </div>
+
+  <!-- Gelen Arama Modalı (Oturum Açmadan Yanıtlanabilir) -->
+  <div id="incoming-call-modal" class="modal-overlay">
+    <div class="call-incoming-box">
+      <div class="call-icon pulse-call">📞</div>
+      <h3 id="call-caller-name">Yurt Müdürü (Danışma)</h3>
+      <p>Oda 104 Aranıyor...</p>
+      <div class="call-buttons">
+        <button class="btn-answer" onclick="answerCall()">🟢 Yanıtla</button>
+        <button class="btn-reject" onclick="rejectCall()">🔴 Reddet</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

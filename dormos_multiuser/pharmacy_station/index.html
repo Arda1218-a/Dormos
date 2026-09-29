@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS - Revir & Eczane İlaç Takip Masası</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MQTT WebSocket Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+
+  <div class="pharmacy-container">
+    
+    <header class="pharmacy-header">
+      <div class="brand">
+        <span class="icon">💊</span>
+        <div>
+          <h1>DormOS Revir & Eczane İlaç İstasyonu</h1>
+          <p>Yurt Sağlık Merkezi • Canlı İlaç Envanteri & Öğrenci Stok Sorgu Masası</p>
+        </div>
+      </div>
+
+      <div class="header-status">
+        <span class="status-badge live">Nöbetçi Hekim Aktif</span>
+        <span class="time-clock" id="pharmacy-clock">14:40:00</span>
+      </div>
+    </header>
+
+    <div class="pharmacy-layout">
+      
+      <!-- Sol: Öğrencilerden Gelen Canlı İlaç Soruları -->
+      <section class="queries-section">
+        <div class="section-head">
+          <h2>💬 Öğrencilerden Gelen Canlı İlaç / Stok Soruları</h2>
+          <span class="badge blue" id="query-count">0 Bekleyen</span>
+        </div>
+
+        <div class="queries-list" id="queries-list">
+          <p class="empty-msg">Bekleyen öğrenci ilaç sorusu yok.</p>
+        </div>
+      </section>
+
+      <!-- Sağ: İlaç Envanteri & Reçete Takibi -->
+      <aside class="inventory-section">
+        <div class="section-head">
+          <h2>📋 Revir İlaç & Tıbbi Malzeme Envanteri</h2>
+          <button class="btn-add-med" onclick="quickAddMedicine()">+ Yeni İlaç</button>
+        </div>
+
+        <div class="medicines-table-wrap">
+          <table class="med-table">
+            <thead>
+              <tr>
+                <th>İlaç Adı</th>
+                <th>Kategori</th>
+                <th>Kalan Stok</th>
+                <th>Durum</th>
+              </tr>
+            </thead>
+            <tbody id="med-table-body">
+              <!-- Dinamik İlaç Satırları -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="red-prescription-notice">
+          <h4>🔒 Kırmızı & Yeşil Reçete Protokolü:</h4>
+          <p>Bu ilaçlar asla kurye ile odaya bırakılamaz. Öğrencinin bizzat revire gelmesi ve kimlik/PIN doğrulaması ile teslim alması zorunludur.</p>
+        </div>
+      </aside>
+
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

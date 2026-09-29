@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS - 10.1" Akıllı Oda Paneli Simülatörü</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- MQTT WebSocket Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+
+  <!-- iPad / Tablet Çerçevesi -->
+  <div class="tablet-frame">
+    <div class="camera-dot"></div>
+
+    <!-- Tablet Ekranı -->
+    <div class="tablet-screen">
+      
+      <!-- Sol Menü (Sidebar) -->
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-icon">🏢</span>
+          <div class="brand-text">
+            <h2>DormOS</h2>
+            <p>Oda 104 • 1. Kat</p>
+          </div>
+        </div>
+
+        <nav class="nav-menu">
+          <button class="nav-item active" data-tab="dashboard">
+            <span class="icon">🏠</span> Oda Kontrol
+          </button>
+          <button class="nav-item" data-tab="intercom">
+            <span class="icon">📞</span> İnterkom & SIP
+          </button>
+          <button class="nav-item" data-tab="canteen">
+            <span class="icon">🍽️</span> Kantin / Mutfak
+          </button>
+          <button class="nav-item" data-tab="health">
+            <span class="icon">🚑</span> İlk Yardım & Revir
+          </button>
+          <button class="nav-item" data-tab="sustainability">
+            <span class="icon">💧</span> Su & Enerji
+          </button>
+        </nav>
+
+        <div class="system-status">
+          <div class="status-indicator online"></div>
+          <div>
+            <p class="status-title">PoE & Mesh Ağ</p>
+            <p class="status-sub">Çevrimiçi • 10 Gbps</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Ana İçerik Alanı -->
+      <main class="content-area">
+        
+        <!-- Üst Bilgi Çubuğu (Header) -->
+        <header class="top-bar">
+          <div class="header-info">
+            <h1 id="page-title">Oda Kontrol Merkezi</h1>
+            <span id="current-time">12:45:00</span>
+          </div>
+          <div class="quick-actions">
+            <button class="btn-nvidia-voice" onclick="toggleNvidiaAssistant()">
+              <span class="nvidia-logo">🟢</span> NVIDIA Riva Asistan
+            </button>
+            <button class="btn-sos-header" onclick="triggerSOS()">🚨 ACİL SOS</button>
+          </div>
+        </header>
+
+        <!-- TAB 1: ODA KONTROL DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content active">
+          <div class="grid-cards">
+            
+            <!-- İklim Kartı -->
+            <div class="card weather-card">
+              <div class="card-header">
+                <h3>🌡️ Oda İklimi</h3>
+                <span class="badge live">Canlı Sensör</span>
+              </div>
+              <div class="metric-row">
+                <div class="metric">
+                  <span class="val" id="disp-temp">24.2°C</span>
+                  <span class="lbl">Sıcaklık</span>
+                </div>
+                <div class="metric">
+                  <span class="val" id="disp-hum">%48</span>
+                  <span class="lbl">Nem Oranı</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <p>Oda Varlık Durumu: <strong id="disp-motion" class="text-green">Dolu (Hareket Algılandı)</strong></p>
+              </div>
+            </div>
+
+            <!-- Aydınlatma Kontrol Kartı -->
+            <div class="card light-card">
+              <div class="card-header">
+                <h3>💡 Aydınlatma & Güç</h3>
+                <span class="badge">Röle Kontrol</span>
+              </div>
+              <div class="toggle-group">
+                <div class="toggle-item">
+                  <span>Ana Tavan Işığı</span>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-main-light" onchange="toggleLight(this.checked)">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Çalışma Masası LED</span>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-desk-light" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Akıllı Priz (Güç Hattı)</span>
+                  <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kurye / Kargo Bildirimi -->
+            <div class="card kargo-card">
+              <div class="card-header">
+                <h3>📦 Kargo & Kurye Durumu</h3>
+                <span class="badge blue">Lojistik</span>
+              </div>
+              <div class="locker-info">
+                <div class="locker-icon">🎁</div>
+                <div>
+                  <h4>1 Adet Kargounuz Var</h4>
+                  <p>Lobi Akıllı Dolap: <strong>04 Numaralı Göz</strong></p>
+                  <p class="pin-code">Açma PIN Kodu: <strong>7842</strong></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Duyuru ve Bilgilendirme -->
+            <div class="card info-card">
+              <div class="card-header">
+                <h3>📢 Yurt İdaresi Duyuruları</h3>
+              </div>
+              <p class="announcement">"Bugün saat 14:00'te 3. kat ortak çalışma odasında rehberlik semineri yapılacaktır."</p>
+              <span class="announcement-date">Yurt Müdürlüğü • Bugün 09:30</span>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- TAB 2: İNTERKOM & SIP TELEFON -->
+        <section id="tab-intercom" class="tab-content">
+          <div class="intercom-container">
+            <div class="dialpad-section">
+              <div class="dial-display">
+                <input type="text" id="dial-number" placeholder="Oda no girin (Örn: 204)" readonly>
+                <button class="btn-clear" onclick="clearDial()">⌫</button>
+              </div>
+              <div class="dialpad-grid">
+                <button onclick="pressDigit('1')">1</button>
+                <button onclick="pressDigit('2')">2</button>
+                <button onclick="pressDigit('3')">3</button>
+                <button onclick="pressDigit('4')">4</button>
+                <button onclick="pressDigit('5')">5</button>
+                <button onclick="pressDigit('6')">6</button>
+                <button onclick="pressDigit('7')">7</button>
+                <button onclick="pressDigit('8')">8</button>
+                <button onclick="pressDigit('9')">9</button>
+                <button onclick="pressDigit('*')">*</button>
+                <button onclick="pressDigit('0')">0</button>
+                <button onclick="pressDigit('#')">#</button>
+              </div>
+              <button class="btn-call-main" onclick="startCall(document.getElementById('dial-number').value)">
+                📞 Sesli/Görüntülü Ara
+              </button>
+            </div>
+
+            <div class="speed-dial-section">
+              <h3>⚡ Hızlı Rehber & Yetkililer</h3>
+              <div class="speed-dial-list">
+                <button class="speed-btn" onclick="startCall('Yurt Müdürü (Oda 01)')">
+                  <span>👔 Yurt Müdürü</span> <small>Dahili 1001</small>
+                </button>
+                <button class="speed-btn" onclick="startCall('1. Kat Sorumlusu (Oda 101)')">
+                  <span>🛡️ 1. Kat Sorumlusu</span> <small>Dahili 1101</small>
+                </button>
+                <button class="speed-btn" onclick="startCall('Güvenlik & Danışma')">
+                  <span>🚪 Giriş Güvenlik</span> <small>Dahili 1000</small>
+                </button>
+                <button class="speed-btn" onclick="startCall('Kantin & Mutfak')">
+                  <span>🍽️ Kantin Danışma</span> <small>Dahili 1005</small>
+                </button>
+                <button class="speed-btn danger" onclick="startCall('112 Acil Çağrı Merkezi')">
+                  <span>🚨 112 Acil Çağrı</span> <small>Doğrudan Hat</small>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: KANTİN & MUTFAK -->
+        <section id="tab-canteen" class="tab-content">
+          <div class="canteen-layout">
+            <div class="menu-list">
+              <div class="canteen-header">
+                <h2>🍲 Günün Menüsü & İçecekler</h2>
+                <label class="sick-checkbox">
+                  <input type="checkbox" id="chk-sick" onchange="toggleSickMode(this.checked)">
+                  <span>🤒 <strong>Hasta Öğrenciyim</strong> (Odaya Sıcak Servis & Özel Çorba)</span>
+                </label>
+              </div>
+
+              <div class="items-grid" id="canteen-items">
+                <!-- Dinamik Menü Öğeleri JavaScript'ten Gelecek -->
+              </div>
+            </div>
+
+            <div class="cart-section">
+              <h3>🛒 Sipariş Sepeti</h3>
+              <div id="cart-list" class="cart-items">
+                <p class="empty-cart">Sepetiniz henüz boş</p>
+              </div>
+              <div class="cart-total">
+                <span>Toplam Tutar:</span>
+                <strong id="cart-total-price">0.00 TL</strong>
+              </div>
+              <button class="btn-order" onclick="placeOrder()">Siparişi Odaya İste (Kapıya Teslim)</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4: İLK YARDIM & REVİR -->
+        <section id="tab-health" class="tab-content">
+          <div class="health-layout">
+            
+            <div class="triage-box">
+              <h2>🚑 3 Saniyelik Acil Durum Triyajı</h2>
+              <p>Durumunuza uygun acil kategoriyi seçin. Nöbetçi revir ve güvenlik odaya anında yönlendirilecektir.</p>
+              
+              <div class="triage-buttons">
+                <button class="btn-triage red" onclick="triggerTriage('Ağır Yaralanma / Kanama / Kaza')">
+                  <span class="tri-icon">🩸</span>
+                  <strong>Fiziksel Yaralanma / Kaza</strong>
+                  <small>İlk yardım çantası ile müdahale</small>
+                </button>
+                <button class="btn-triage orange" onclick="triggerTriage('Solunum Güçlüğü / Bayılma / Kalp')">
+                  <span class="tri-icon">🫁</span>
+                  <strong>Solunum / Kalp / Bayılma</strong>
+                  <small>Oksijen ve acil tıbbi ekipman</small>
+                </button>
+                <button class="btn-triage purple" onclick="triggerTriage('Güvenlik Tehdidi / Şiddet')">
+                  <span class="tri-icon">🛑</span>
+                  <strong>Güvenlik Tehdidi / Şiddet</strong>
+                  <small>Güvenlik ekibi doğrudan intikal</small>
+                </button>
+              </div>
+            </div>
+
+            <div class="support-box">
+              <div class="card psychological-card">
+                <h3>🧠 Sessiz Psikolojik Destek & Danışman</h3>
+                <p>Konuşmakta zorlanıyor veya bunalmış hissediyorsanız, tek tuşla nöbetçi danışmandan destek talep edebilirsiniz.</p>
+                <button class="btn-silent-help" onclick="requestMentalSupport()">🕊️ Sessiz Destek Talep Et (Anonim)</button>
+              </div>
+
+              <div class="card medication-card">
+                <h3>💊 İlaç Takip & Reçete Hatırlatıcı</h3>
+                <ul class="med-list">
+                  <li>
+                    <span>Antibiyotik (Sabah / Akşam)</span>
+                    <strong class="text-green">Sonraki: 20:00</strong>
+                  </li>
+                  <li>
+                    <span>Alerji İlacı (Günde 1)</span>
+                    <strong class="text-blue">Alındı (08:30)</strong>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- TAB 5: SU & SÜRDÜRÜLEBİLİRLİK -->
+        <section id="tab-sustainability" class="tab-content">
+          <div class="sustain-grid">
+            
+            <div class="card water-quality-card">
+              <div class="card-header">
+                <h3>💧 1. Kat Su İstasyonu Kalitesi</h3>
+                <span class="badge green">Canlı IoT Arıtma</span>
+              </div>
+              <div class="water-stats">
+                <div class="circle-stat">
+                  <span class="big-num">%99.8</span>
+                  <span class="stat-lbl">Saflık Derecesi</span>
+                </div>
+                <div class="water-details">
+                  <p>TDS Seviyesi: <strong>32 ppm (Doğal Kaynak Suyu)</strong></p>
+                  <p>Kat Deposu Seviyesi: <strong>%84 (2.100 Litre Mevcut)</strong></p>
+                  <p>UV Dezenfeksiyon: <strong class="text-green">Aktif & Stabil</strong></p>
+                  <p>Karbon Filtre Durumu: <strong class="text-green">%92 Ömür</strong></p>
+                </div>
+              </div>
+              <div class="eco-badge">
+                🌱 <em>Bu ay plastik pet şişe kullanmayarak doğaya 14 kg karbon salınımını engellediniz.</em>
+              </div>
+            </div>
+
+            <div class="card energy-card">
+              <div class="card-header">
+                <h3>⚡ Oda Enerji & Tüketim Analizi</h3>
+              </div>
+              <div class="energy-row">
+                <div class="energy-item">
+                  <span class="energy-val">0.34 kWh</span>
+                  <span class="energy-lbl">Bugünkü Elektrik</span>
+                </div>
+                <div class="energy-item">
+                  <span class="energy-val">18 Litre</span>
+                  <span class="energy-lbl">Bugünkü Su Tüketimi</span>
+                </div>
+              </div>
+              <div class="anomaly-status normal">
+                <span>🛡️ Anomali Algılanmadı (Tüm hatlar normal)</span>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- NVIDIA Riva & Llama-3.1 Sesli Asistan Modalı -->
+  <div id="nvidia-modal" class="modal-overlay">
+    <div class="nvidia-assistant-box">
+      <div class="nvidia-top">
+        <div class="nvidia-title">
+          <span class="nvidia-badge-icon">⚡</span>
+          <div>
+            <h3>NVIDIA Riva & Llama-3.1 AI Asistan</h3>
+            <p>Uçta Yerel Yapay Zeka & Doğal Sesli Komut</p>
+          </div>
+        </div>
+        <button class="btn-close-nvidia" onclick="toggleNvidiaAssistant()">✕</button>
+      </div>
+
+      <div class="nvidia-chat-history" id="nvidia-chat-history">
+        <div class="chat-bubble ai">
+          <span>👋 Merhaba! Ben DormOS NVIDIA AI Asistanıyım. Işıkları açıp kapatabilir, kantinden yemek isteyebilir, sıcaklığı söyleyebilir veya rehberlik desteği sağlayabilirim.</span>
+        </div>
+      </div>
+
+      <div class="nvidia-voice-bar">
+        <div class="nvidia-waves" id="nvidia-voice-waves">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <input type="text" id="nvidia-input-text" placeholder="Sesle konuşun veya komut yazın... (Örn: Işığı aç, çorba iste)" onkeypress="handleNvidiaKeyPress(event)">
+        <button id="btn-nvidia-mic" class="btn-nv-mic" onclick="startNvidiaSpeechRecognition()">🎙️ Konuş</button>
+        <button class="btn-nv-send" onclick="sendNvidiaCommand()">Gönder</button>
+      </div>
+
+      <div class="nvidia-quick-chips">
+        <button onclick="runQuickNvidia('Işıkları aç')">💡 Işıkları Aç</button>
+        <button onclick="runQuickNvidia('Işıkları kapat')">🌑 Işıkları Kapat</button>
+        <button onclick="runQuickNvidia('Oda sıcaklığı kaç derece?')">🌡️ Sıcaklık Durumu</button>
+        <button onclick="runQuickNvidia('Hastayım sıcak çorba sipariş et')">🍲 Sıcak Çorba İste</button>
+        <button onclick="runQuickNvidia('Sınav stresim var, rehberlik desteği ver')">🧠 Rehberlik & Stres</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arama / İnterkom Modal Popup -->
+  <div id="call-modal" class="modal-overlay">
+    <div class="call-box">
+      <div class="call-avatar">👤</div>
+      <h2 id="calling-target">Yurt Müdürü</h2>
+      <p id="calling-status" class="blink">Aranıyor (SIP Bağlantısı)...</p>
+      <div class="call-controls">
+        <button class="btn-hangup" onclick="endCall()">❌ Aramayı Sonlandır</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NVIDIA NIM API Konfigürasyonu -->
+  <script src="nvidia_config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

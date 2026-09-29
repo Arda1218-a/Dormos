@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS - Kantin & Mutfak Operasyon Terminali</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MQTT WebSocket Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+
+  <div class="canteen-terminal-container">
+    
+    <!-- Üst Bar -->
+    <header class="canteen-header">
+      <div class="brand">
+        <span class="icon">🍳</span>
+        <div>
+          <h1>DormOS Kantin & Mutfak Terminali</h1>
+          <p>Yurt Yemekhanesi & Mutfak Sipariş-Stok Yönetim Masası</p>
+        </div>
+      </div>
+
+      <div class="header-metrics">
+        <div class="metric-pill">
+          <span>Bekleyen Sipariş: <strong id="pending-count" class="text-orange">0</strong></span>
+        </div>
+        <span class="time-clock" id="canteen-clock">14:35:00</span>
+      </div>
+    </header>
+
+    <div class="canteen-layout">
+      
+      <!-- Sol: Canlı Gelen Sipariş Akışı -->
+      <section class="orders-feed-section">
+        <div class="section-head">
+          <h2>🔔 Canlı Gelen Oda Siparişleri</h2>
+          <span class="badge live">MQTT Canlı Akış</span>
+        </div>
+
+        <div class="orders-list" id="orders-list">
+          <p class="empty-orders">Henüz yeni sipariş gelmedi. Bekleniyor...</p>
+        </div>
+      </section>
+
+      <!-- Sağ: Canlı Menü & Stok Yönetimi -->
+      <aside class="inventory-section">
+        <div class="section-head">
+          <h2>📦 Mutfak Stok & Menü Durumu</h2>
+          <button class="btn-reset-stock" onclick="resetDefaultStock()">Stokları Yenile</button>
+        </div>
+
+        <div class="stock-cards" id="stock-cards-container">
+          <!-- Dinamik stok kartları -->
+        </div>
+
+        <div class="canteen-announcement-card">
+          <h3>📢 Odalara Kantin Duyurusu Geç</h3>
+          <div class="ann-input-group">
+            <input type="text" id="input-canteen-ann" placeholder="Örn: Sıcak poğaça çıktı, akşam menüsü başladı...">
+            <button onclick="broadcastCanteenAnn()">Duyur</button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

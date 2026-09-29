@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS Multi-User - Canlı Test & Operasyon Konsolu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070913;
+      --card: #0f1526;
+      --border: #1e2c4a;
+      --text: #f8fafc;
+      --text-muted: #8b9bb2;
+      --blue: #38bdf8;
+      --green: #22c55e;
+      --orange: #f97316;
+      --purple: #a855f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 30px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+    .hub-header { text-align: center; max-width: 800px; margin-bottom: 30px; }
+    .hub-badge { display: inline-block; background: rgba(56, 189, 248, 0.15); color: var(--blue); padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 10px; border: 1px solid var(--blue); }
+    .hub-header h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .hub-header p { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+
+    .action-bar { display: flex; gap: 14px; margin-bottom: 30px; }
+    .btn-launch-all { background: var(--green); color: #070913; border: none; padding: 12px 28px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 20px rgba(34, 197, 94, 0.4); }
+    .btn-launch-all:hover { transform: scale(1.03); }
+
+    .terminals-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; max-width: 1000px; margin-bottom: 40px; }
+    .terminal-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; transition: all 0.2s; position: relative; overflow: hidden; }
+    .terminal-card:hover { border-color: var(--blue); transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); }
+
+    .t-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .t-icon { font-size: 32px; background: #070b16; padding: 12px; border-radius: 14px; border: 1px solid var(--border); }
+    .t-title h3 { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+    .t-title span { font-size: 11px; color: var(--blue); font-weight: 600; }
+
+    .t-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; flex: 1; }
+
+    .t-btn { background: #16223b; border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; transition: all 0.2s; }
+    .t-btn:hover { background: var(--blue); color: #070913; }
+
+    .flow-guide { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; width: 100%; max-width: 1000px; }
+    .flow-guide h3 { font-size: 16px; margin-bottom: 14px; color: var(--orange); }
+    .flow-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .step-box { background: #070b16; border: 1px solid var(--border); padding: 14px; border-radius: 12px; font-size: 11px; line-height: 1.5; }
+    .step-box strong { color: var(--text); display: block; margin-bottom: 4px; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+  <header class="hub-header">
+    <div class="hub-badge">DormOS Multi-User v2.0</div>
+    <h1>Çok Kişilik Kampüs Operasyon Konsolu</h1>
+    <p>3 ve 5 kişilik odalar, mutfak/kantin stok yönetimi, revir ilaç takibi ve kişi-hedefli kurye terminallerini tek merkezden yönetin.</p>
+  </header>
+
+  <div class="action-bar">
+    <button class="btn-launch-all" onclick="openAllTerminals()">🚀 4 Terminali Birden Yeni Sekmelerde Başlat</button>
+  </div>
+
+  <div class="terminals-grid">
+    
+    <!-- Kart 1: Oda İstasyonu -->
+    <div class="terminal-card">
+      <div class="t-head">
+        <div class="t-icon">📱</div>
+        <div class="t-title">
+          <h3>Çok Kişilik Akıllı Oda İstasyonu</h3>
+          <span>room_station/index.html</span>
+        </div>
+      </div>
+      <p class="t-desc">3 veya 5 kişilik oda modu, 7/24 oturumsuz çalışan mmWave ve arama güvenliği, telefon SMS OTP girişi, bireysel okuma lambası ve temizlik nöbeti.</p>
+      <a href="room_station/index.html" target="_blank" class="t-btn">Oda Panelini Aç ➔</a>
+    </div>
+
+    <!-- Kart 2: Kurye Kiosku -->
+    <div class="terminal-card">
+      <div class="t-head">
+        <div class="t-icon">📦</div>
+        <div class="t-title">
+          <h3>Birey Hedefli Kurye Kiosk</h3>
+          <span>smart_courier_v2/index.html</span>
+        </div>
+      </div>
+      <p class="t-desc">Kurye odayı (104) seçtiğinde odadaki 5 öğrencinin listesi gelir. Seçilen öğrenciye özel akıllı dolap PIN kodu üretilip yalnızca onun telefonuna düşer.</p>
+      <a href="smart_courier_v2/index.html" target="_blank" class="t-btn">Kurye Kioskunu Aç ➔</a>
+    </div>
+
+    <!-- Kart 3: Eczane & Revir -->
+    <div class="terminal-card">
+      <div class="t-head">
+        <div class="t-icon">💊</div>
+        <div class="t-title">
+          <h3>Revir & Eczane İlaç Masası</h3>
+          <span>pharmacy_station/index.html</span>
+        </div>
+      </div>
+      <p class="t-desc">Canlı ilaç envanteri (OTC ve Kırmızı Reçete), öğrencilerin odalarından attığı "Parol var mı?" sorularına nöbetçi hekimin tek tuşla anlık yanıt vermesi.</p>
+      <a href="pharmacy_station/index.html" target="_blank" class="t-btn">Eczane Panelini Aç ➔</a>
+    </div>
+
+    <!-- Kart 4: Kantin & Mutfak -->
+    <div class="terminal-card">
+      <div class="t-head">
+        <div class="t-icon">🍳</div>
+        <div class="t-title">
+          <h3>Kantin & Mutfak Operasyon Masası</h3>
+          <span>canteen_station/index.html</span>
+        </div>
+      </div>
+      <p class="t-desc">Canlı gelen oda/yatak siparişleri ("Oda 104 - Yatak 2"), mutfak porsiyon stok takibi (tost, çorba) ve tüm odalara tek tıkla sıcak yemek duyurusu geçme.</p>
+      <a href="canteen_station/index.html" target="_blank" class="t-btn">Kantin Masasını Aç ➔</a>
+    </div>
+
+  </div>
+
+  <section class="flow-guide">
+    <h3>🧪 Eksiksiz Canlı Test Senaryosu (2 Dakikalık Akış)</h3>
+    <div class="flow-steps">
+      <div class="step-box">
+        <strong>1. Kurye Teslimatı</strong>
+        Kurye kioskundan Oda 104'te Mehmet Kaya'yı seçip dolaba bırakın. PIN üretilir.
+      </div>
+      <div class="step-box">
+        <strong>2. Gizli PIN & Giriş</strong>
+        Oda panelinde Mehmet'e tıklayıp SMS koduyla girin. PIN'in sadece Mehmet'e özel olduğunu görün.
+      </div>
+      <div class="step-box">
+        <strong>3. İlaç Sorma</strong>
+        Mehmet'in profilinden "Parol var mı?" diye sorun. Eczane panelinden "Var" yanıtı anında geri dönsün.
+      </div>
+      <div class="step-box">
+        <strong>4. Kantin & Otomatik Kilit</strong>
+        Hasta çorbası siparişi verin, mutfak ekranına düşsün. 60 sn sonra ekran güvenle kilitlensin.
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function openAllTerminals() {
+      window.open('room_station/index.html', '_blank');
+      window.open('smart_courier_v2/index.html', '_blank');
+      window.open('pharmacy_station/index.html', '_blank');
+      window.open('canteen_station/index.html', '_blank');
+    }
+  </script>
+
+</body>
+</html>

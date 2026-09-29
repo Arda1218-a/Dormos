@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS - Yurt Güvenlik & İdare Kontrol Merkezi</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- MQTT WebSocket Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+
+  <!-- Üst Bar (Header) -->
+  <header class="admin-header">
+    <div class="admin-brand">
+      <span class="logo-icon">🏢</span>
+      <div>
+        <h1>DormOS İdare & Güvenlik Merkezi</h1>
+        <p>50 Odalı Akıllı Yurt Ana Kontrol Masası</p>
+      </div>
+    </div>
+
+    <div class="header-stats">
+      <div class="stat-pill">
+        <span class="dot green"></span>
+        <span>Sistem: <strong>Aktif (PoE Gigabit)</strong></span>
+      </div>
+      <div class="stat-pill">
+        <span class="dot blue"></span>
+        <span id="stat-active-rooms">Dolu Oda: <strong>38 / 50</strong></span>
+      </div>
+      <div class="stat-pill alert" id="alarm-counter-pill">
+        <span class="dot red"></span>
+        <span id="stat-alarms">Aktif Alarm: <strong id="alarm-count-text">0</strong></span>
+      </div>
+      <span id="admin-time" class="time-clock">12:00:00</span>
+    </div>
+  </header>
+
+  <!-- Ana Panel Düzeni -->
+  <div class="admin-layout">
+    
+    <!-- Sol: 50 Odalı Kat Haritası -->
+    <section class="rooms-section">
+      <div class="section-title">
+        <h2>🗺️ 5 Katlı Yurt Odaları Canlı Haritası</h2>
+        <div class="legend">
+          <span><i class="box safe"></i> Güvenli / Dolu</span>
+          <span><i class="box empty"></i> Boş</span>
+          <span><i class="box emergency"></i> ACİL ALARM</span>
+        </div>
+      </div>
+
+      <div class="floors-container" id="floors-container">
+        <!-- Katlar ve Odalar JS ile oluşturulacak -->
+      </div>
+    </section>
+
+    <!-- Sağ: Bildirim & Operasyon Akışı -->
+    <aside class="operations-sidebar">
+      
+      <!-- 1. Acil Durum & SOS Akışı -->
+      <div class="panel-box sos-box">
+        <div class="box-head">
+          <h3>🚨 Canlı Acil Durum & SOS Bildirimleri</h3>
+        </div>
+        <div id="sos-stream" class="stream-content">
+          <p class="empty-msg">Şu anda aktif bir acil durum uyarısı yok.</p>
+        </div>
+      </div>
+
+      <!-- 2. Kestirimci Bakım & Su / Elektrik Anomali Akışı -->
+      <div class="panel-box anomaly-box">
+        <div class="box-head">
+          <h3>🧠 Kestirimci Bakım & Anomali Teşhisleri</h3>
+        </div>
+        <div id="anomaly-stream" class="stream-content">
+          <p class="empty-msg">Şebeke ve su hatları stabil. Anomali yok.</p>
+        </div>
+      </div>
+
+      <!-- 3. Kantin & Mutfak Siparişleri -->
+      <div class="panel-box canteen-box">
+        <div class="box-head">
+          <h3>🍽️ Kantin & Mutfak Canlı Sipariş Akışı</h3>
+        </div>
+        <div id="canteen-stream" class="stream-content">
+          <p class="empty-msg">Henüz yeni sipariş gelmedi.</p>
+        </div>
+      </div>
+
+      <!-- 3. Revir & İlk Yardım Triyaj Akışı -->
+      <div class="panel-box infirmary-box">
+        <div class="box-head">
+          <h3>🚑 Revir & Sağlık Çağrıları</h3>
+        </div>
+        <div id="infirmary-stream" class="stream-content">
+          <p class="empty-msg">Bekleyen sağlık çağrısı yok.</p>
+        </div>
+      </div>
+
+      <!-- 4. Hızlı Aksiyonlar & Anons -->
+      <div class="panel-box actions-box">
+        <div class="box-head">
+          <h3>📢 Genel Anons & Çağrı</h3>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-action primary" onclick="callRoom('104')">📞 Oda 104'ü Ara (Wokwi)</button>
+          <button class="btn-action warning" onclick="broadcastAnnouncement()">📣 Tüm Odalara Sesli Anons Yap</button>
+          <button class="btn-action danger" onclick="resetAllAlarms()">🛑 Tüm Alarmları Sıfırla</button>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- Ses Efekti -->
+  <audio id="admin-alarm-sound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
+  <script src="app.js"></script>
+</body>
+</html>

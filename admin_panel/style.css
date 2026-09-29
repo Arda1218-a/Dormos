@@ -1,0 +1,347 @@
+:root {
+  --bg: #0b0f19;
+  --card: #151c2e;
+  --border: #232f48;
+  --text: #f1f5f9;
+  --text-dim: #8fa0bc;
+  --green: #10b981;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --blue: #3b82f6;
+  --purple: #8b5cf6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.admin-header {
+  background: #111728;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-icon {
+  font-size: 32px;
+}
+
+.admin-brand h1 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.admin-brand p {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-pill {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-pill.alert {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.dot.green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.dot.blue { background: var(--blue); }
+.dot.red { background: var(--red); animation: blink 1s infinite; }
+
+@keyframes blink { 50% { opacity: 0.2; } }
+
+.time-clock {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--blue);
+  background: #0b0f19;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* Ana Düzen */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 24px;
+  padding: 24px 28px;
+  flex: 1;
+}
+
+/* Odalar Haritası */
+.rooms-section {
+  background: var(--card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title h2 {
+  font-size: 17px;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.box {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.box.safe { background: rgba(16, 185, 129, 0.2); border: 1px solid var(--green); }
+.box.empty { background: #1e293b; border: 1px solid #475569; }
+.box.emergency { background: var(--red); box-shadow: 0 0 8px var(--red); }
+
+.floors-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.floor-row {
+  background: #0f172a;
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.floor-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8px;
+}
+
+.room-chip {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 10px 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.room-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--blue);
+}
+
+.room-chip .r-no {
+  font-size: 12px;
+  font-weight: 700;
+  display: block;
+}
+
+.room-chip .r-status {
+  font-size: 9px;
+  color: var(--text-dim);
+}
+
+.room-chip.safe {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+.room-chip.safe .r-no { color: var(--green); }
+
+.room-chip.emergency {
+  background: var(--red) !important;
+  border-color: #ff8080 !important;
+  color: white !important;
+  animation: pulse-room 1s infinite;
+}
+.room-chip.emergency .r-no, .room-chip.emergency .r-status { color: white !important; font-weight: 700; }
+
+@keyframes pulse-room {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.room-chip.special {
+  border-style: dashed;
+  border-color: var(--purple);
+}
+
+/* Sağ Operasyon Sidebar */
+.operations-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.box-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.box-head h3 {
+  font-size: 14px;
+}
+
+.stream-content {
+  max-height: 160px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty-msg {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 20px 0;
+}
+
+.alert-item {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid var(--red);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-item h4 { font-size: 13px; color: var(--red); }
+.alert-item p { font-size: 11px; color: var(--text-dim); }
+
+.btn-resolve {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.canteen-item {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.canteen-item h4 { font-size: 13px; color: var(--text); }
+.canteen-item p { font-size: 11px; color: var(--orange); }
+
+.btn-canteen-done {
+  background: var(--green);
+  color: #0f172a;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-action {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-action:hover { opacity: 0.9; }
+
+.btn-action.primary { background: var(--blue); color: white; }
+.btn-action.warning { background: var(--orange); color: #0f172a; }
+.btn-action.danger { background: var(--red); color: white; }

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS - Edge AI Akustik Ses Sınıflandırıcı & Sahte Alarm Filtresi</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MQTT WebSocket Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+
+  <div class="audio-lab-container">
+    
+    <!-- Başlık -->
+    <header class="lab-header">
+      <div class="lab-brand">
+        <span class="pulse-icon">🎙️</span>
+        <div>
+          <h1>DormOS Edge AI Akustik Teşhis Laboratuvarı</h1>
+          <p>Oda İçi Mikroişlemcide (TinyML) Ses Analizi & 15 Saniyelik Sahte Alarm Doğrulama Sayacı</p>
+        </div>
+      </div>
+      <div class="privacy-badge">
+        <span>🔒 <strong>Sıfır Bulut Ses Kaydı:</strong> Sesler dışarı aktarılmaz, tamamen cihaz içinde işlenir.</span>
+      </div>
+    </header>
+
+    <div class="lab-layout">
+      
+      <!-- Sol Panel: Spektrogram ve Canlı Frekans Analizörü -->
+      <section class="spectrum-section">
+        
+        <div class="visualizer-card">
+          <div class="card-head">
+            <h3>📊 Gerçek Zamanlı FFT Frekans Spektrogramı (0 - 10 kHz)</h3>
+            <span class="badge live" id="mic-status-badge">Mikrofon Hazır</span>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="spectrumCanvas"></canvas>
+          </div>
+
+          <div class="mic-controls">
+            <button id="btn-toggle-mic" class="btn-mic" onclick="toggleMicrophone()">🎙️ Gerçek Bilgisayar Mikrofonunu Başlat</button>
+            <span class="mic-hint">Kendi sesinizle bağırarak veya alkış yaparak test edebilirsiniz.</span>
+          </div>
+        </div>
+
+        <!-- Örnek Ses Simülatörü (Hazır Test Butonları) -->
+        <div class="samples-card">
+          <h3>🧪 Örnek Sesleri Simüle Et (Model Testi)</h3>
+          <p class="sub">TinyML modelinin sesleri nasıl ayırt ettiğini test edin:</p>
+          
+          <div class="samples-grid">
+            <button class="btn-sample danger" onclick="simulateSound('GLASS_BREAK')">
+              <span>🪟 Cam Kırılması</span>
+              <small>Yüksek Frekanslı Rezonans (6-8 kHz)</small>
+            </button>
+            <button class="btn-sample danger" onclick="simulateSound('PANIC_SCREAM')">
+              <span>🩸 Gerçek Panik Çığlığı / İmdat</span>
+              <small>Yüksek Desibel + Sürekli Harmonik</small>
+            </button>
+            <button class="btn-sample safe" onclick="simulateSound('DREAM_TALK')">
+              <span>😴 Sahte Alarm: Rüyada Bağırma / Sayıklama</span>
+              <small>Düşük Harmonik (Filtrelenir)</small>
+            </button>
+            <button class="btn-sample safe" onclick="simulateSound('BUG_SHOCK')">
+              <span>🕷️ Sahte Alarm: Böcek Görüp Çığlık Atma</span>
+              <small>Anlık Tekil Tepe (Teyit Sayacı Başlar)</small>
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Sağ Panel: Yapay Zeka Güven Skoru ve Karar Motoru -->
+      <aside class="ai-decision-section">
+        
+        <!-- Yapay Zeka Güven Skorları -->
+        <div class="decision-card">
+          <h3>🧠 TinyML Model Çıktıları (Güven Skoru)</h3>
+          
+          <div class="confidence-bars">
+            <div class="bar-group">
+              <div class="bar-lbl">
+                <span>Normal Konuşma / Sessizlik</span>
+                <strong id="score-normal">96%</strong>
+              </div>
+              <div class="bar-track"><div id="fill-normal" class="bar-fill green" style="width: 96%;"></div></div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar-lbl">
+                <span>Panik / Şiddet Çığlığı</span>
+                <strong id="score-scream">2%</strong>
+              </div>
+              <div class="bar-track"><div id="fill-scream" class="bar-fill red" style="width: 2%;"></div></div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar-lbl">
+                <span>Cam Kırılması / Darbe</span>
+                <strong id="score-glass">1%</strong>
+              </div>
+              <div class="bar-track"><div id="fill-glass" class="bar-fill orange" style="width: 1%;"></div></div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar-lbl">
+                <span>Sahte / Geçici Ani Gürültü</span>
+                <strong id="score-false">1%</strong>
+              </div>
+              <div class="bar-track"><div id="fill-false" class="bar-fill yellow" style="width: 1%;"></div></div>
+            </div>
+          </div>
+
+          <div class="ai-verdict-box" id="ai-verdict">
+            <h4>🟢 Durum: GÜVENLİ</h4>
+            <p>Odada olağandışı akustik anomali tespit edilmedi.</p>
+          </div>
+        </div>
+
+        <!-- Algoritma Notu -->
+        <div class="info-box">
+          <h4>💡 "Rüya & Böcek" Sorununu Nasıl Çözdük?</h4>
+          <p>Model olağandışı bir çığlık algıladığında hemen 112'yi aramaz. Öğrencinin tabletinde <strong>15 saniyelik "İyiyim" Sayacı</strong> açılır. Öğrenci rüyadan uyanıp iptal ederse polis/güvenlik gereksiz meşgul edilmez!</p>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </div>
+
+  <!-- 15 Saniyelik Sahte Alarm Doğrulama Modalı (Öğrenci Panelinde Açılır) -->
+  <div id="false-alarm-modal" class="modal-overlay">
+    <div class="verification-box">
+      <div class="warning-icon">⚠️</div>
+      <h2>Olağandışı Ses Algılandı!</h2>
+      <p class="verif-sub">Odada panik/çığlık veya cam kırılması benzeri bir gürültü tespit edildi.</p>
+      
+      <div class="countdown-circle">
+        <span id="countdown-number">15</span>
+        <small>saniye</small>
+      </div>
+
+      <p class="verif-warning">15 saniye içinde iptal edilmezse <strong>Güvenlik ve Nöbetçi İdare</strong> odaya sevk edilecektir.</p>
+
+      <div class="modal-buttons">
+        <button class="btn-i-am-ok" onclick="cancelAlarmByUser()">✅ İYİYİM (Yanlış Alarm / Rüyaydı)</button>
+        <button class="btn-confirm-sos" onclick="confirmEmergencyNow()">🚨 YARDIM EDİN (Gerçek Acil Durum)</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="audio-tick" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
+  <script src="app.js"></script>
+</body>
+</html>

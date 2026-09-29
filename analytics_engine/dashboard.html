@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS - Kestirimci Bakım & Anomali Tespit AI Motoru</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js ve MQTT -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+
+  <!-- Ana Başlık -->
+  <header class="engine-header">
+    <div class="brand">
+      <span class="pulse-icon">🧠</span>
+      <div>
+        <h1>DormOS Kestirimci Bakım & AI Anomali Motoru</h1>
+        <p>50 Oda 7/24 Telemetri Analizi, Su Kaçağı & Yangın Riski Erken Uyarı Sistemi</p>
+      </div>
+    </div>
+    <div class="ai-status">
+      <span class="badge ai-live">Canlı Yapay Zeka Modeli Aktif</span>
+      <span id="engine-clock">14:00:00</span>
+    </div>
+  </header>
+
+  <div class="engine-layout">
+    
+    <!-- Sol Panel: Canlı Grafik & Algoritmalar -->
+    <section class="telemetry-section">
+      
+      <!-- İstatistik Sayaçları -->
+      <div class="metrics-grid">
+        <div class="m-card">
+          <span class="m-lbl">İzlenen Akıllı Sensör</span>
+          <span class="m-val text-blue">250 Nokta</span>
+          <span class="m-sub">50 Oda x 5 Parametre</span>
+        </div>
+        <div class="m-card">
+          <span class="m-lbl">Toplam Su Akışı</span>
+          <span class="m-val text-cyan" id="total-water">42.5 L/dk</span>
+          <span class="m-sub">Bina Geneli Tüketim</span>
+        </div>
+        <div class="m-card">
+          <span class="m-lbl">Toplam Şebeke Gücü</span>
+          <span class="m-val text-yellow" id="total-power">14.8 kW</span>
+          <span class="m-sub">Anlık Çekilen Enerji</span>
+        </div>
+        <div class="m-card alert" id="anomaly-summary-card">
+          <span class="m-lbl">Tespit Edilen Anomali</span>
+          <span class="m-val text-red" id="active-anomaly-count">2 Risk</span>
+          <span class="m-sub">Otomatik Müdahale Bekleniyor</span>
+        </div>
+      </div>
+
+      <!-- Canlı Grafik -->
+      <div class="chart-card">
+        <div class="chart-head">
+          <h3>📈 Canlı Tüketim & Anomali Eğrisi (Elektrik & Su)</h3>
+          <div class="chart-legend-custom">
+            <span class="dot-p"></span> Elektrik (kW)
+            <span class="dot-w"></span> Su (L/dk)
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="liveChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Simülasyon Kontrolleri (Test Amaçlı Arıza Tetikleyiciler) -->
+      <div class="sim-controls-card">
+        <h3>🧪 Canlı Arıza Simülatörü (Test Butonları)</h3>
+        <p>Aşağıdaki butonlara basarak yapay zekanın arızayı nasıl anında yakaladığını test edebilirsiniz:</p>
+        <div class="sim-btns">
+          <button class="btn-sim water" onclick="simulateLeak()">💧 Oda 304'te Gece Su Sızıntısı Başlat</button>
+          <button class="btn-sim fire" onclick="simulateGhostHeater()">🔥 Oda 202'de Boş Odada Isıtıcı Unutuldu</button>
+          <button class="btn-sim arc" onclick="simulateArcFault()">⚡ Oda 104 Prizinde Elektrik Arkı / Kısa Devre</button>
+          <button class="btn-sim reset" onclick="resetAnomalies()">✅ Tüm Anomalileri Temizle</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Sağ Panel: Yapay Zeka Teşhis ve Karar Akışı -->
+    <aside class="ai-feed-section">
+      
+      <div class="feed-card">
+        <div class="feed-head">
+          <h3>🚨 Yapay Zeka Teşhis & Müdahale Akışı</h3>
+          <span class="badge red">Kritik Olaylar</span>
+        </div>
+        <div class="anomalies-list" id="anomalies-list">
+          <!-- Dinamik Anomali Kartları Buraya Gelecek -->
+        </div>
+      </div>
+
+      <div class="algorithm-card">
+        <h3>🧠 Aktif Çalışan Ar-Ge Algoritmaları</h3>
+        <ul class="algo-list">
+          <li>
+            <strong>1. Gece Akış Tabanı Analizi (NFBA):</strong>
+            <span>01:00-05:00 arası sürekli debi tespiti (Boru sızıntısı filtresi).</span>
+          </li>
+          <li>
+            <strong>2. Varlık-Yük Korelasyonu (PLC):</strong>
+            <span>PIR = 0 iken Priz > 1500W durumunda yangın önleme alarmı.</span>
+          </li>
+          <li>
+            <strong>3. Yüksek Frekanslı Spektrum Analizi:</strong>
+            <span>Priz ark arızalarında mikro-saniyede gücü kesme önerisi.</span>
+          </li>
+        </ul>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

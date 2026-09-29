@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "author": "DormOS Team",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-ili9341", "id": "tft", "top": -220, "left": 180, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht", "top": 180, "left": -140, "attrs": {} },
+    { "type": "wokwi-pir-motion-sensor", "id": "pir", "top": 180, "left": 60, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay_light", "top": -140, "left": -180, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn_sos", "top": 40, "left": 280, "attrs": { "color": "red", "label": "SOS" } },
+    { "type": "wokwi-buzzer", "id": "buzzer", "top": 150, "left": 280, "attrs": { "volume": "0.5" } },
+    { "type": "wokwi-led", "id": "led_light", "top": -40, "left": -260, "attrs": { "color": "yellow", "label": "ODA IŞIĞI" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 10, "left": -260, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+
+    [ "esp:GND.1", "tft:GND", "black", [ "v0" ] ],
+    [ "esp:3V3", "tft:VCC", "red", [ "v0" ] ],
+    [ "esp:18", "tft:SCK", "orange", [ "v0" ] ],
+    [ "esp:23", "tft:MOSI", "green", [ "v0" ] ],
+    [ "esp:19", "tft:MISO", "blue", [ "v0" ] ],
+    [ "esp:15", "tft:CS", "yellow", [ "v0" ] ],
+    [ "esp:2", "tft:D/C", "purple", [ "v0" ] ],
+    [ "esp:4", "tft:RESET", "brown", [ "v0" ] ],
+    [ "esp:3V3", "tft:LED", "red", [ "v0" ] ],
+
+    [ "dht:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "dht:GND", "esp:GND.2", "black", [ "v0" ] ],
+    [ "dht:SDA", "esp:14", "blue", [ "v0" ] ],
+
+    [ "pir:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "pir:GND", "esp:GND.2", "black", [ "v0" ] ],
+    [ "pir:OUT", "esp:27", "purple", [ "v0" ] ],
+
+    [ "relay_light:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "relay_light:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "relay_light:IN", "esp:12", "green", [ "v0" ] ],
+
+    [ "relay_light:NO", "r1:1", "orange", [ "v0" ] ],
+    [ "r1:2", "led_light:A", "orange", [ "v0" ] ],
+    [ "led_light:C", "esp:GND.1", "black", [ "v0" ] ],
+    [ "relay_light:COM", "esp:3V3", "red", [ "v0" ] ],
+
+    [ "btn_sos:1.l", "esp:3V3", "red", [ "v0" ] ],
+    [ "btn_sos:2.l", "esp:32", "red", [ "v0" ] ],
+
+    [ "buzzer:1", "esp:25", "gold", [ "v0" ] ],
+    [ "buzzer:2", "esp:GND.2", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

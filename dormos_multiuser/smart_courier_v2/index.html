@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS - Çok Kişilik Kurye Teslimat Kiosku (v2)</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MQTT WebSocket Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+
+  <div class="kiosk-container">
+    
+    <header class="kiosk-header">
+      <div class="brand">
+        <span class="icon">📦</span>
+        <div>
+          <h1>DormOS Akıllı Kargo & Kurye Kiosku (v2)</h1>
+          <p>Çok Kişilik Odalar İçin Kişiye Özel Teslimat Noktası</p>
+        </div>
+      </div>
+      <span class="clock" id="kiosk-clock">14:45:00</span>
+    </header>
+
+    <main class="kiosk-body">
+      
+      <!-- ADIM 1: ODA SEÇİMİ -->
+      <section id="kiosk-step-1" class="k-step active">
+        <h2>Teslimat Yapılacak Odayı Seçin</h2>
+        <p class="hint">Oda numarasını girin:</p>
+        <div class="room-selector">
+          <button class="btn-room-select active" onclick="selectRoom('104')">🏢 Oda 104 (5 Kişilik)</button>
+          <button class="btn-room-select" onclick="selectRoom('202')">🏢 Oda 202 (3 Kişilik)</button>
+        </div>
+        <button class="btn-next" onclick="goToStep2()">İleri: Öğrenciyi Seç ➔</button>
+      </section>
+
+      <!-- ADIM 2: HEDEF ÖĞRENCİ SEÇİMİ (ÇOK KİŞİLİK ODA KRİTİK ADIMI) -->
+      <section id="kiosk-step-2" class="k-step">
+        <h2>Paket Kime Ait? (Alıcı Öğrenci)</h2>
+        <p class="hint">Oda 104'te 5 öğrenci ikamet etmektedir. Lütfen paketin üzerindeki alıcıyı seçin:</p>
+
+        <div class="students-grid" id="students-select-grid">
+          <!-- JS ile öğrenci kartları oluşturulacak -->
+        </div>
+
+        <button class="btn-back" onclick="goToStep(1)">⬅ Geri</button>
+      </section>
+
+      <!-- ADIM 3: TESLİMAT YÖNTEMİ -->
+      <section id="kiosk-step-3" class="k-step">
+        <h2 id="target-recipient-title">Mehmet Kaya (Yatak 2) İçin Teslimat</h2>
+        <p class="hint">Kurye bekleme süresini sıfırlamak için Akıllı Dolap önerilir.</p>
+
+        <div class="methods-grid">
+          <div class="method-card" onclick="dispatchDirectCall()">
+            <span class="m-icon">📞</span>
+            <h3>Odayı / Mehmet'i Çaldır</h3>
+            <p>Oda paneli çalar ve Mehmet'in cep telefonuna arama gider.</p>
+            <button class="btn-m">Zili Çal</button>
+          </div>
+
+          <div class="method-card highlight" onclick="dispatchSmartLocker()">
+            <span class="m-icon">🔐</span>
+            <h3>Akıllı Dolaba Bırak (Kişiye Özel PIN)</h3>
+            <p>Boş dolap açılır. PIN kodu SADECE Mehmet'in profiline ve telefonuna iletilir.</p>
+            <button class="btn-m btn-smart">Dolap Kapağını Aç ➔</button>
+          </div>
+        </div>
+
+        <button class="btn-back" onclick="goToStep(2)">⬅ Geri</button>
+      </section>
+
+      <!-- ADIM 4: SONUÇ -->
+      <section id="kiosk-step-4" class="k-step">
+        <div class="result-box">
+          <div class="res-icon" id="res-icon">✅</div>
+          <h2 id="res-title">Teslimat Başarılı!</h2>
+          <div class="res-details" id="res-details"></div>
+          <button class="btn-finish" onclick="goToStep(1)">Yeni Teslimat</button>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

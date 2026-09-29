@@ -1,0 +1,10 @@
+# Dependencies & Temp Files
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.DS_Store
+Thumbs.db
+*.log
+scratch/

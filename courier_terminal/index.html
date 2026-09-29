@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS - Akıllı Kurye & Kargo Teslimat Terminali</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MQTT WebSocket Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+
+  <!-- Kurye Kiosk Çerçevesi -->
+  <div class="kiosk-container">
+    
+    <!-- Üst Bar -->
+    <header class="kiosk-header">
+      <div class="kiosk-brand">
+        <span class="icon">📦</span>
+        <div>
+          <h1>DormOS Akıllı Teslimat Noktası</h1>
+          <p>Yurt Giriş Kapısı & Lobi Kargo Terminali</p>
+        </div>
+      </div>
+      <div class="kiosk-status">
+        <span class="status-dot"></span>
+        <span id="kiosk-time">14:00:00</span>
+      </div>
+    </header>
+
+    <!-- Ana Akış Ekranları (Adım Adım) -->
+    <main class="kiosk-body">
+      
+      <!-- 1. ADIM: Oda / Öğrenci Seçimi -->
+      <section id="step-1" class="kiosk-step active">
+        <h2>Teslimat Yapılacak Odayı Seçin</h2>
+        <p class="subtitle">Oda numarasını tuşlayın veya listeden hızlıca seçin.</p>
+
+        <div class="input-display">
+          <input type="text" id="target-room-input" placeholder="Oda No (Örn: 104)" readonly>
+          <button class="btn-clear" onclick="clearRoomInput()">Sil</button>
+        </div>
+
+        <div class="keypad-grid">
+          <button onclick="pressKioskDigit('1')">1</button>
+          <button onclick="pressKioskDigit('2')">2</button>
+          <button onclick="pressKioskDigit('3')">3</button>
+          <button onclick="pressKioskDigit('4')">4</button>
+          <button onclick="pressKioskDigit('5')">5</button>
+          <button onclick="pressKioskDigit('6')">6</button>
+          <button onclick="pressKioskDigit('7')">7</button>
+          <button onclick="pressKioskDigit('8')">8</button>
+          <button onclick="pressKioskDigit('9')">9</button>
+          <button onclick="pressKioskDigit('0')">0</button>
+          <button class="btn-quick-104" onclick="setRoom('104')">⚡ Oda 104 (Canlı)</button>
+          <button class="btn-proceed" onclick="proceedToDelivery()">İleri ➔</button>
+        </div>
+      </section>
+
+      <!-- 2. ADIM: Teslimat Türü ve Odayı Arama -->
+      <section id="step-2" class="kiosk-step">
+        <div class="delivery-options">
+          <h2 id="delivery-title">Oda 104 İçin Teslimat Yöntemi</h2>
+          <p class="subtitle" id="occupancy-info">Sensör Durumu Kontrol Ediliyor...</p>
+
+          <div class="options-grid">
+            
+            <!-- Seçenek A: Odayı Doğrudan Çaldır -->
+            <div class="option-card" onclick="ringStudentRoom()">
+              <span class="opt-icon">📞</span>
+              <h3>Odayı / Öğrenciyi Çaldır</h3>
+              <p>Öğrencinin odasındaki panel zili çalar ve öğrenci kapıya çağrılır.</p>
+              <button class="btn-opt">Zili Çal</button>
+            </div>
+
+            <!-- Seçenek B: Akıllı Kilitli Dolaba Bırak -->
+            <div class="option-card highlight" onclick="dropToSmartLocker()">
+              <span class="opt-icon">🔐</span>
+              <h3>Akıllı Dolaba Bırak (Sıfır Bekleme)</h3>
+              <p>Sistem boş bir dolap kapağını açar. Öğrenciye tek kullanımlık PIN gider.</p>
+              <button class="btn-opt btn-smart">Dolap Kapağını Aç ➔</button>
+            </div>
+
+          </div>
+
+          <button class="btn-back" onclick="goToStep(1)">⬅ Geri Dön</button>
+        </div>
+      </section>
+
+      <!-- 3. ADIM: Başarılı Teslimat Ekranı -->
+      <section id="step-3" class="kiosk-step">
+        <div class="success-box">
+          <div class="success-icon" id="res-icon">✅</div>
+          <h2 id="res-title">İşlem Tamamlandı!</h2>
+          <p id="res-desc">Lobi Akıllı Dolap kapağı açıldı.</p>
+
+          <div class="locker-assign-card" id="locker-result-card">
+            <span class="big-slot" id="slot-num">DOLAP #04</span>
+            <p>Kapağı kapatmayı unutmayınız.</p>
+            <p class="pin-sent-info">🔑 Öğrencinin tabletine <strong>PIN Kodu (7842)</strong> başarıyla iletildi.</p>
+          </div>
+
+          <button class="btn-finish" onclick="resetKiosk()">Yeni Teslimat Yap</button>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

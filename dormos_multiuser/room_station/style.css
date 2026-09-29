@@ -1,0 +1,860 @@
+:root {
+  --bg-dark: #070b14;
+  --panel-bg: #10192d;
+  --card-bg: #18243f;
+  --border: #24355a;
+  --text-main: #f8fafc;
+  --text-muted: #8e9fb8;
+  --blue: #38bdf8;
+  --green: #22c55e;
+  --red: #ef4444;
+  --orange: #f97316;
+  --purple: #a855f7;
+  --yellow: #eab308;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body {
+  background-color: #03060c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.tablet-frame {
+  width: 1100px;
+  height: 700px;
+  background: #0d1322;
+  border-radius: 36px;
+  padding: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 0 2px #263554;
+  position: relative;
+}
+
+.camera-dot {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: #1e293b;
+  border-radius: 50%;
+  border: 1px solid #334155;
+}
+
+.tablet-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-dark);
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.screen-view {
+  display: none;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+.screen-view.active {
+  display: flex;
+}
+
+/* ============================================================= */
+/* KİLİT / BEKLEME EKRANI                                        */
+/* ============================================================= */
+.standby-header {
+  background: #0b1120;
+  padding: 18px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.room-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dorm-logo { font-size: 28px; }
+
+.room-identity h1 {
+  font-size: 19px;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.room-identity p {
+  font-size: 12px;
+  color: var(--blue);
+}
+
+.room-capacity-toggle {
+  display: flex;
+  background: #060911;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.btn-cap {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cap.active {
+  background: var(--blue);
+  color: #03060c;
+}
+
+.header-time-box { text-align: right; }
+
+.header-time-box span {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: block;
+}
+
+.header-time-box small {
+  font-size: 10px;
+  color: var(--green);
+}
+
+/* 7/24 Kesintisiz Şerit */
+.shared-services-strip {
+  background: #0f182c;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow-x: auto;
+}
+
+.service-pill {
+  background: #0a1120;
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+}
+
+.service-pill strong { color: var(--text-main); }
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.pulse-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+.btn-emergency-bypass {
+  margin-left: auto;
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* 🚌 KAMPÜS CANLI HUD (OTOBÜS & KÜTÜPHANE) */
+.campus-live-hud {
+  background: #090e1b;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.hud-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #0e1526;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hud-icon { font-size: 20px; }
+.hud-text strong { font-size: 11px; color: var(--text-main); display: block; }
+.hud-text small { font-size: 9px; color: var(--text-muted); }
+.badge-time { color: var(--orange); font-weight: 700; }
+.text-green { color: var(--green) !important; font-weight: 700; }
+.text-blue { color: var(--blue) !important; font-weight: 700; }
+
+/* Bekleme Ekranı Gövdesi */
+.standby-body {
+  flex: 1;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.standby-body h2 {
+  font-size: 20px;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.select-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.resident-cards-grid {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 960px;
+}
+
+.resident-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  width: 160px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.resident-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--blue);
+  box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
+}
+
+.res-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #182847;
+  color: var(--blue);
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  border: 2px solid var(--border);
+}
+
+.res-bed {
+  font-size: 11px;
+  color: var(--orange);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.res-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.res-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.res-badge.in-room { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+.res-badge.focus-active { background: rgba(168, 85, 247, 0.2); color: var(--purple); font-weight: 700; }
+
+.kargo-notification-pip {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--orange);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* Bekleme Ekranı Footer */
+.standby-footer {
+  background: #0b1120;
+  border-top: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.btn-test-call {
+  background: #1e2c4a;
+  color: var(--blue);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* ============================================================= */
+/* KİŞİSEL PROFİL EKRANI                                         */
+/* ============================================================= */
+.personal-header {
+  background: #0b1120;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.user-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #03060c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.user-meta h2 {
+  font-size: 15px;
+  color: var(--text-main);
+}
+
+.user-meta p {
+  font-size: 11px;
+  color: var(--green);
+}
+
+.session-timer-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.btn-logout {
+  background: #1e2c4a;
+  border: 1px solid var(--border);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.personal-grid {
+  flex: 1;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.p-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.p-card-head h3 {
+  font-size: 12px;
+  color: var(--text-main);
+}
+
+.badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.badge.green { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+.badge.orange { background: rgba(249, 115, 22, 0.15); color: var(--orange); }
+.badge.blue { background: rgba(56, 189, 248, 0.15); color: var(--blue); }
+
+.control-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.c-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-main);
+}
+
+.highlight-focus {
+  background: rgba(168, 85, 247, 0.1);
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.zoning-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: auto;
+}
+
+/* Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #334155;
+  transition: .3s;
+  border-radius: 20px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--green); }
+input:checked + .slider:before { transform: translateX(16px); }
+
+/* Çamaşırhane Kartı */
+.laundry-machines-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.machine-box {
+  background: #090e18;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.machine-box span { font-size: 10px; color: var(--text-muted); }
+.machine-box strong { font-size: 11px; color: var(--text-main); }
+.machine-box.busy strong { color: var(--red); }
+.machine-box.available strong { color: var(--green); }
+
+.btn-reserve-mach {
+  background: var(--blue);
+  color: #070b14;
+  border: none;
+  padding: 4px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Taksi Kartı */
+.taxi-call-box p {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.pickup-select-row {
+  display: flex;
+  gap: 6px;
+}
+
+.pickup-select-row select {
+  flex: 1;
+  background: #090e18;
+  border: 1px solid var(--border);
+  color: white;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+.btn-call-taxi {
+  background: var(--orange);
+  color: white;
+  border: none;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Kargo */
+.personal-kargo-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kargo-icon-large {
+  font-size: 30px;
+  background: #090e18;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.personal-kargo-content h4 { font-size: 12px; color: var(--text-main); }
+.personal-kargo-content p { font-size: 11px; color: var(--text-muted); }
+.pin-display { color: var(--orange) !important; font-size: 13px !important; margin: 2px 0; }
+.pin-warning { font-size: 9px; color: var(--yellow); }
+
+/* Eczane Sorgulama */
+.query-input-group {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.query-input-group input {
+  flex: 1;
+  background: #090e18;
+  border: 1px solid var(--border);
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: white;
+  font-size: 11px;
+}
+
+.btn-ask-med {
+  background: var(--blue);
+  color: #070b14;
+  border: none;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.query-response {
+  background: #090e18;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 10px;
+  color: var(--text-muted);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.my-prescriptions {
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--green);
+}
+
+/* Kantin */
+.canteen-quick-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-quick-order {
+  background: #090e18;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.btn-quick-order.sick { border-color: var(--orange); color: var(--orange); }
+
+.order-feedback {
+  font-size: 10px;
+  color: var(--green);
+  margin-top: 4px;
+}
+
+/* Temizlik Nöbeti */
+.chore-status {
+  background: #090e18;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  margin-bottom: 6px;
+  border: 1px solid var(--border);
+}
+.text-orange { color: var(--orange); }
+
+.chore-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.chore-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 6px;
+  background: #0c1322;
+  border-radius: 4px;
+}
+
+/* ============================================================= */
+/* MODALLAR (OTP, ARAMA, TAKSİ QR)                              */
+/* ============================================================= */
+.modal-overlay {
+  display: none;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+.modal-overlay.active { display: flex; }
+
+/* Taksi QR Kutusu */
+.taxi-match-box {
+  background: #0f1629;
+  border: 2px solid var(--orange);
+  border-radius: 24px;
+  padding: 24px 30px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 0 35px rgba(249, 115, 22, 0.3);
+}
+
+.taxi-icon { font-size: 40px; margin-bottom: 6px; }
+.taxi-match-box h3 { font-size: 16px; color: var(--text-main); margin-bottom: 2px; }
+.taxi-match-box p { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+
+.taxi-qr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.qr-svg {
+  padding: 8px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.taxi-pin-badge {
+  background: #070b14;
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.taxi-pin-badge span { font-size: 9px; color: var(--text-muted); }
+.taxi-pin-badge strong { font-size: 16px; color: var(--orange); letter-spacing: 2px; }
+
+.taxi-vehicle-details {
+  background: #080d1a;
+  border: 1px solid var(--border);
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.btn-close-taxi {
+  background: var(--green);
+  color: #070b14;
+  border: none;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* OTP */
+.otp-box {
+  background: #0e1526;
+  border: 2px solid var(--blue);
+  border-radius: 24px;
+  padding: 24px;
+  width: 360px;
+  text-align: center;
+}
+
+.otp-avatar { font-size: 32px; margin-bottom: 6px; }
+.otp-box h3 { font-size: 15px; color: var(--text-main); margin-bottom: 2px; }
+.otp-hint { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+
+.simulated-sms-badge {
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px dashed var(--blue);
+  padding: 5px;
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--blue);
+  margin-bottom: 12px;
+}
+
+.pin-dots-container input {
+  background: #060910;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 22px;
+  letter-spacing: 8px;
+  text-align: center;
+  color: white;
+  width: 150px;
+  padding: 6px;
+  margin-bottom: 12px;
+}
+
+.otp-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  width: 200px;
+  margin: 0 auto;
+}
+
+.otp-keypad button {
+  background: #18233a;
+  border: 1px solid var(--border);
+  color: white;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Gelen Arama */
+.call-incoming-box {
+  background: #0f182c;
+  border: 2px solid var(--green);
+  border-radius: 24px;
+  padding: 30px 40px;
+  text-align: center;
+  width: 360px;
+}
+
+.call-icon { font-size: 44px; margin-bottom: 10px; }
+.call-buttons { display: flex; gap: 14px; margin-top: 20px; }
+
+.btn-answer {
+  flex: 1;
+  background: var(--green);
+  color: #070b14;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-reject {
+  flex: 1;
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DormOS - Faz 3: Çökmez Ağ & Offline Mesh Simülatörü</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="mesh-container">
+    
+    <!-- Üst Kontrol Başlığı -->
+    <header class="mesh-header">
+      <div class="brand">
+        <span class="icon">🛡️</span>
+        <div>
+          <h1>DormOS Çökmez Ağ (Fail-Safe Mesh) Operasyon Merkezi</h1>
+          <p>Faz 3: 3 Katmanlı Hata Toleranslı Haberleşme & İnternetsiz Acil Durum Ağı</p>
+        </div>
+      </div>
+
+      <div class="network-mode-pill" id="network-status-pill">
+        <span class="dot green" id="status-dot"></span>
+        <strong id="network-mode-title">BİRİNCİL HAT: PoE Gigabit Ethernet (1000 Mbps)</strong>
+      </div>
+    </header>
+
+    <!-- Ana Çalışma Düzeni -->
+    <div class="mesh-layout">
+      
+      <!-- Sol: Canlı Ağ Topolojisi & Düğüm Haritası -->
+      <section class="topology-section">
+        <div class="topology-head">
+          <h3>🌐 Katlar Arası Kablosuz Mesh Topolojisi & Düğüm Atlama (Node Hopping)</h3>
+          <span class="badge" id="packet-status-badge">Ağ Beklemede</span>
+        </div>
+
+        <div class="topology-canvas-wrap">
+          <canvas id="topologyCanvas"></canvas>
+        </div>
+
+        <!-- Katman Göstergeleri -->
+        <div class="layers-status-grid">
+          <div class="layer-card active" id="layer-1-card">
+            <div class="l-head">
+              <span class="l-num">Katman 1</span>
+              <span class="l-badge" id="l1-badge">AKTİF & ÇEVRİMİÇİ</span>
+            </div>
+            <h4>PoE Gigabit Ethernet Omurga</h4>
+            <p>1000 Mbps yüksek hızlı veri, görüntülü interkom ve bulut iletişimi.</p>
+          </div>
+
+          <div class="layer-card standby" id="layer-2-card">
+            <div class="l-head">
+              <span class="l-num">Katman 2</span>
+              <span class="l-badge" id="l2-badge">SICAK YEDEK (STANDBY)</span>
+            </div>
+            <h4>Thread / ESP-NOW 2.4GHz Mesh</h4>
+            <p>Odadan odaya atlamalı kablosuz yerel acil durum ağı (< 150 ms geçiş).</p>
+          </div>
+
+          <div class="layer-card standby" id="layer-3-card">
+            <div class="l-head">
+              <span class="l-num">Katman 3</span>
+              <span class="l-badge" id="l3-badge">ULTRA YEDEK</span>
+            </div>
+            <h4>Sub-1GHz 868MHz Uzun Mesafe RF</h4>
+            <p>Betonarme duvarları delen düşük frekanslı acil durum telsiz sinyali.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Sağ: Kesinti Simülatörü ve Test Kontrolleri -->
+      <aside class="controls-sidebar">
+        
+        <!-- Kesinti Tetikleme Kartı -->
+        <div class="card sim-kill-card">
+          <h3>⚡ Kesinti Dayanıklılık Testi</h3>
+          <p class="desc">Ana bina fiber internet kablosunun koptuğunu veya ana switch'in yandığını simüle edin:</p>
+          
+          <div class="kill-buttons">
+            <button id="btn-cut-cable" class="btn-kill danger" onclick="toggleCableCut()">
+              ✂️ Ana Ethernet Kablosunu / İnterneti KOPAR
+            </button>
+            <button class="btn-kill primary" onclick="sendMeshEmergencyPacket()">
+              📡 4. Kattan (Oda 404) Mesh Acil Durum Paketi Fırlat
+            </button>
+          </div>
+        </div>
+
+        <!-- Canlı Paket Günlüğü -->
+        <div class="card logs-card">
+          <div class="logs-head">
+            <h3>📜 Canlı Paket Atlama (Hop) Günlüğü</h3>
+            <button class="btn-clear-log" onclick="clearLogs()">Temizle</button>
+          </div>
+          <div class="logs-content" id="mesh-logs">
+            <div class="log-entry info">
+              <span class="time">[14:00:01]</span>
+              <span>Sistem normal: 50 Düğüm PoE omurgası üzerinden bağlı.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metrikler -->
+        <div class="card metrics-mini">
+          <div class="m-row">
+            <span>Mesh Düğüm Sayısı:</span>
+            <strong>50 Oda + 1 Gateway</strong>
+          </div>
+          <div class="m-row">
+            <span>Otomatik Geçiş Süresi (Failover):</span>
+            <strong class="text-green">85 ms</strong>
+          </div>
+          <div class="m-row">
+            <span>Paket Kayıp Oranı (Mesh):</span>
+            <strong class="text-green">%0.0 (Sıfır Kayıp)</strong>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

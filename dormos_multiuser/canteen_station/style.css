@@ -1,0 +1,245 @@
+:root {
+  --bg: #070a12;
+  --card: #111726;
+  --border: #1e2a44;
+  --text: #f8fafc;
+  --text-muted: #8c9cb3;
+  --orange: #f97316;
+  --green: #22c55e;
+  --blue: #38bdf8;
+  --red: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.canteen-terminal-container {
+  width: 1080px;
+  background: var(--card);
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.canteen-header {
+  background: #0b101c;
+  padding: 18px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand .icon { font-size: 32px; }
+.brand h1 { font-size: 19px; font-weight: 700; }
+.brand p { font-size: 12px; color: var(--orange); }
+
+.header-metrics {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.metric-pill {
+  background: #162035;
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.text-orange { color: var(--orange); }
+
+.time-clock {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--blue);
+  background: #070a12;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.canteen-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
+  padding: 24px 28px;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-head h2 { font-size: 15px; }
+
+.badge.live {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--green);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+/* Sipariş Listesi */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 440px;
+  overflow-y: auto;
+}
+
+.empty-orders {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 40px 0;
+}
+
+.order-item-card {
+  background: #090e18;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--orange);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-info h3 { font-size: 14px; color: var(--text); margin-bottom: 4px; }
+.order-info p { font-size: 12px; color: var(--orange); font-weight: 600; margin-bottom: 2px; }
+.order-info small { font-size: 10px; color: var(--text-muted); }
+
+.order-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-prep {
+  background: #1e2d47;
+  color: var(--blue);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-dispatch {
+  background: var(--green);
+  color: #070a12;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Stok Kartları */
+.stock-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.stock-row {
+  background: #090e18;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stock-row .name { font-size: 12px; font-weight: 600; }
+.stock-row .count { font-size: 12px; color: var(--green); font-weight: 700; }
+.stock-row.low .count { color: var(--red); }
+
+.btn-toggle-stock {
+  background: #162035;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.btn-reset-stock {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--blue);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.canteen-announcement-card {
+  background: #090e18;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.canteen-announcement-card h3 { font-size: 13px; margin-bottom: 8px; }
+
+.ann-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.ann-input-group input {
+  flex: 1;
+  background: #070a12;
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: white;
+  font-size: 12px;
+}
+
+.ann-input-group button {
+  background: var(--orange);
+  color: white;
+  border: none;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}

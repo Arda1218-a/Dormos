@@ -1,0 +1,6 @@
+Adafruit GFX Library
+Adafruit ILI9341
+DHT sensor library
+Adafruit Unified Sensor
+PubSubClient
+ArduinoJson

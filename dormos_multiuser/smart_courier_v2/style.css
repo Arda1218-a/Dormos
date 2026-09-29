@@ -1,0 +1,221 @@
+:root {
+  --bg: #070a12;
+  --card: #0f1524;
+  --border: #1d2b46;
+  --text: #f8fafc;
+  --text-muted: #8b9bb2;
+  --orange: #f97316;
+  --green: #22c55e;
+  --blue: #38bdf8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.kiosk-container {
+  width: 920px;
+  min-height: 580px;
+  background: var(--card);
+  border-radius: 24px;
+  border: 2px solid var(--border);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.kiosk-header {
+  background: #090e1a;
+  padding: 18px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand .icon { font-size: 32px; }
+.brand h1 { font-size: 18px; font-weight: 700; }
+.brand p { font-size: 11px; color: var(--orange); }
+
+.clock {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.kiosk-body {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.k-step {
+  display: none;
+  width: 100%;
+  max-width: 740px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.k-step.active { display: flex; }
+
+.k-step h2 { font-size: 22px; margin-bottom: 4px; }
+.hint { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+
+.room-selector {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.btn-room-select {
+  background: #090e1a;
+  border: 2px solid var(--border);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-room-select.active, .btn-room-select:hover {
+  border-color: var(--blue);
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.btn-next, .btn-finish {
+  background: var(--green);
+  color: #070a12;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-back {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 18px;
+  border-radius: 8px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+/* Öğrenci Seçim Grid */
+.students-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.student-card {
+  background: #090e1a;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.student-card:hover {
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+
+.s-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #152238;
+  color: var(--blue);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.s-bed { font-size: 11px; color: var(--orange); font-weight: 600; }
+.s-name { font-size: 13px; font-weight: 700; }
+
+/* Metodlar */
+.methods-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.method-card {
+  background: #090e1a;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.method-card:hover { transform: translateY(-3px); }
+.method-card.highlight { border-color: var(--orange); background: rgba(249, 115, 22, 0.06); }
+
+.m-icon { font-size: 38px; margin-bottom: 10px; display: block; }
+.method-card h3 { font-size: 16px; margin-bottom: 6px; }
+.method-card p { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+
+.btn-m {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-smart { background: var(--orange); color: white; }
+
+/* Sonuç */
+.res-icon { font-size: 64px; margin-bottom: 12px; }
+.res-details {
+  background: #090e1a;
+  border: 2px dashed var(--green);
+  border-radius: 16px;
+  padding: 20px 30px;
+  margin: 20px 0;
+  line-height: 1.6;
+}
