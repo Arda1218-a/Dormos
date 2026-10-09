@@ -7,6 +7,9 @@
 
 > **An end-to-end, fault-tolerant, privacy-first Internet of Things (IoT) and Edge AI operating ecosystem engineered specifically for high-density student residences and modern university dormitories.**
 
+📄 **[Read the Full Technical Whitepaper & Dataset Blueprint (SYSTEM_WHITEPAPER_AND_DATASETS.md)](SYSTEM_WHITEPAPER_AND_DATASETS.md)**  
+*(Comprehensive breakdown of Edge AI acoustic models, Google AudioSet ontology, fail-safe magnetic sliding doors, and empirical 1.95-year ROI payback economics).*
+
 ---
 
 ## 📢 Independent Authorship & Engineering Statement
